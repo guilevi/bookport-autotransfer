@@ -1,0 +1,16 @@
+if [ $# -eq 0 ]
+then
+echo No filename provided.
+exit 1
+fi
+
+ebook-convert "$1" $HOME/.bport/tmp.txt --asciiize
+f=$(basename "$1" .epub).txt
+touch "$HOME/.bport/$f"
+gsed -f $HOME/.bport/rules $HOME/.bport/tmp.txt >"$HOME/.bport/$f"
+line=$(head -n 1 "$HOME/.bport/$f")
+echo "First line is: $line"
+read -p "Enter title or return to use first line:" inp
+gsed -i "1 i ${inp:-$line}\r\n" "$HOME/.bport/$f"
+ubt "$HOME/.bport/$f"
+rm $HOME/.bport/tmp.txt "$HOME/.bport/$f"
